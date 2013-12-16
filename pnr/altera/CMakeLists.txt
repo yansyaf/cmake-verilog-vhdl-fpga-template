@@ -31,12 +31,8 @@ foreach (_src ${VHDL_SYN_SRC_FILES})
   list(APPEND SYN_SRC_ABS ${VHDL_SRC_DIR}/${_src})
 endforeach (_src ${VHDL_SYN_SRC_FILES})
 
-message (STATUS "TCL file has been written to: " ${CMAKE_CURRENT_BINARY_DIR}/source.tcl)
-
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/synscript.tcl.in"
                 "${CMAKE_CURRENT_BINARY_DIR}/synscript.tcl" )
-
-message (STATUS "TCL file has been written to: " ${CMAKE_CURRENT_BINARY_DIR}/synscript.tcl)
 
 add_custom_command(
   OUTPUT fmax.log
@@ -44,4 +40,4 @@ add_custom_command(
   DEPENDS ${SYN_SRC_ABS}
 )
 
-add_custom_target(syn_altera DEPENDS fmax.log)
+add_custom_target(syn DEPENDS fmax.log)

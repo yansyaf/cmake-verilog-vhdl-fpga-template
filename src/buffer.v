@@ -1,5 +1,3 @@
-`define TARGET_ALTERA
-
 //----------------------------------------------------
 // A crazy buffer, it's add two input into single output
 // and store on a buffer
@@ -60,6 +58,19 @@ ADDER iadder (
       .full   (full),
       .empty  (empty)
     );
+  `else
+    `ifdef TARGET_MODEL
+      fifo I_FIFO(
+        .clk     (clk), 
+        .rstp    (!rst), 
+        .din     (sum), 
+        .writep  (in_en), 
+        .readp   (out_en), 
+        .dout    (out), 
+        .emptyp  (empty), 
+        .fullp   (full)
+      );
+    `endif
   `endif
 `endif
 

@@ -22,6 +22,17 @@
 
 #############################################################################
 
+if( ${TARGET} MATCHES "xilinx" )
+  set(DEFINE_LIBRARY unisims_ver)
+  set(DEFINE_TARGET "TARGET_XILINX")  
+elseif( ${TARGET} MATCHES "altera" )
+  set(DEFINE_LIBRARY altera_mf_ver)
+  set(DEFINE_TARGET "TARGET_ALTERA")
+else()
+  set(DEFINE_LIBRARY "altera_mf_ver")
+  set(DEFINE_TARGET "TARGET_MODEL")
+endif()
+
 macro(verilog_src_collect)
   unset(VERILOG_SRC_ABS CACHE)
   foreach (_src ${VERILOG_SRC_FILES})
@@ -41,7 +52,7 @@ endmacro(vhdl_src_collect)
 macro(add_compile_command)
   add_custom_command(
     OUTPUT work/_vmake
-    COMMAND vlog ${VERILOG_SRC_ABS} 
+    COMMAND vlog ${VERILOG_SRC_ABS} +define+${DEFINE_TARGET}
     DEPENDS ${VERILOG_SRC_ABS} ${CMAKE_CURRENT_BINARY_DIR}/work
     COMMENT "Compiling Verilog files: ${VERILOG_SRC_ABS}"
   )
@@ -65,14 +76,14 @@ macro(add_sim_command)
   # Run the simulation
   add_custom_command(
     OUTPUT transcript
-    COMMAND vsim -c -do \"run -all\;quit\" tb_top
+    COMMAND vsim -c -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
     COMMENT "Run Simulation"
   )
 
   add_custom_command(
     OUTPUT transcript_gui
-    COMMAND vsim -do \"run -all\;quit\" -novopt tb_top
+    COMMAND vsim -novopt -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
     COMMENT "Run Simulation"
   )  
@@ -86,6 +97,7 @@ vhdl_src_collect()
 add_compile_command()
 add_sim_command()
 
+add_custom_target(compile DEPENDS work/_vmake)
+
 add_custom_target(sim DEPENDS transcript)
 add_custom_target(sim_gui DEPENDS transcript_gui)
-add_custom_target(compile DEPENDS work/_vmake)

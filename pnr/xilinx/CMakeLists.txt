@@ -37,4 +37,4 @@ add_custom_command(
   DEPENDS ${SYN_SRC_FILE}
 )
 
-add_custom_target(syn_xilinx DEPENDS xflow.log)
+add_custom_target(syn DEPENDS xflow.log)

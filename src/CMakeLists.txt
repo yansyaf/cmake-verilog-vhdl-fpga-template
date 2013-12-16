@@ -14,11 +14,12 @@
 
 #############################################################################
 
-# Select one of option bellow to be ON/OFF
-set(USING_XILINX 0)
-set(USING_ALTERA 1)
+add_subdirectory(altera)
+add_subdirectory(xilinx)
+add_subdirectory(model)
 
-set(TOP_MODULE_NAME buffer PARENT_SCOPE)
+set(TOP_MODULE_NAME 		buffer 		PARENT_SCOPE)
+set(TESTBENCH_MODULE_NAME 	buffer_tb 	PARENT_SCOPE)
 
 # All Verilog & VHDL files which go to synthesis
 set(VERILOG_SYN_SRC_FILES 
@@ -26,61 +27,66 @@ set(VERILOG_SYN_SRC_FILES
 )
 
 set(VHDL_SYN_SRC_FILES 
-    adder.vhd
+	adder.vhd
 )
 
-set(XILINX_VERILOG_SYN_SRC_FILES )
-
-set(XILINX_VHDL_SYN_SRC_FILES 
-	xilinx/fifo.vhd
+set(VERILOG_TB_SRC_FILE
+	buffer_tb.v
 )
 
-set(ALTERA_VERILOG_SYN_SRC_FILES 
-	altera/fifo.v
+set(VHDL_TB_SRC_FILE
 )
 
-set(ALTERA_VHDL_SYN_SRC_FILES )
-
-if(USING_XILINX)
+if( ${TARGET} MATCHES "xilinx" )
 
 	foreach (_src ${XILINX_VERILOG_SYN_SRC_FILES})
-		list(APPEND VERILOG_SYN_SRC_FILES ${_src})
+		list(APPEND VERILOG_SYN_SRC_FILES xilinx/${_src})
 	endforeach (_src ${XILINX_VERILOG_SYN_SRC_FILES})
 		
 	foreach (_src ${XILINX_VHDL_SYN_SRC_FILES})
-		list(APPEND VHDL_SYN_SRC_FILES ${_src})
+		list(APPEND VHDL_SYN_SRC_FILES xilinx/${_src})
 	endforeach (_src $XILINX_VHDL_SYN_SRC_FILES})
 
 	message( STATUS "Using Xilinx Library" )
 
-else(USING_XILINX)
-	if(USING_ALTERA)
+elseif(${TARGET} MATCHES "altera")
 
-		foreach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
-			list(APPEND VERILOG_SYN_SRC_FILES ${_src})
-		endforeach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
-		
-		foreach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
-			list(APPEND VHDL_SYN_SRC_FILES ${_src})
-		endforeach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
+	foreach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
+		list(APPEND VERILOG_SYN_SRC_FILES altera/${_src})
+	endforeach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
+	
+	foreach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
+		list(APPEND VHDL_SYN_SRC_FILES altera/${_src})
+	endforeach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
 
-		message( STATUS "Using Altera Library")
+	message( STATUS "Using Altera Library")
 
-	endif(USING_ALTERA)
-endif(USING_XILINX)
+else()
+
+	foreach (_src ${MODEL_VERILOG_SYN_SRC_FILES})
+		list(APPEND VERILOG_SYN_SRC_FILES model/${_src})
+	endforeach (_src ${MODEL_VERILOG_SYN_SRC_FILES})
+	
+	foreach (_src ${MODEL_VHDL_SYN_SRC_FILES})
+		list(APPEND VHDL_SYN_SRC_FILES model/${_src})
+	endforeach (_src ${MODEL_VHDL_SYN_SRC_FILES})
+
+	message( STATUS "Using Behavioral Model Library")
+
+endif()
 
 set(VERILOG_SYN_SRC_FILES 	${VERILOG_SYN_SRC_FILES} 	PARENT_SCOPE)
 set(VHDL_SYN_SRC_FILES 		${VHDL_SYN_SRC_FILES} 		PARENT_SCOPE)
+set(VERILOG_SRC_DIR 		${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+set(VHDL_SRC_DIR 			${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 
 # Verilog & VHDL files for synthesis plus testbench files
 set(VERILOG_SRC_FILES 
 	${VERILOG_SYN_SRC_FILES}
-	buffer_tb.v
+	${VERILOG_TB_SRC_FILE}
 	PARENT_SCOPE)
 
 set(VHDL_SRC_FILES 
 	${VHDL_SYN_SRC_FILES}
+	${VHDL_TB_SRC_FILE}
 	PARENT_SCOPE)
-
-set(VERILOG_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-set(VHDL_SRC_DIR 	${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)

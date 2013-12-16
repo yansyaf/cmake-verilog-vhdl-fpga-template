@@ -15,5 +15,8 @@
 
 #############################################################################
 
-ADD_SUBDIRECTORY(altera)
-ADD_SUBDIRECTORY(xilinx)
+if( ${TARGET} MATCHES "xilinx" )
+	add_subdirectory(xilinx)
+elseif( ${TARGET} MATCHES "altera" )
+	add_subdirectory(altera)
+endif()

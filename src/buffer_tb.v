@@ -1,5 +1,5 @@
 
-module tb_top ();
+module buffer_tb ();
 
 parameter N = 32;
 

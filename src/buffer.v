@@ -1,4 +1,4 @@
-`define TARGET_XILINX
+`define TARGET_ALTERA
 
 //----------------------------------------------------
 // A crazy buffer, it's add two input into single output

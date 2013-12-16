@@ -15,11 +15,8 @@
 #############################################################################
 
 # Select one of option bellow to be ON/OFF
-OPTION(USING_XILINX "Using Xilinx as Target" ON) 
-OPTION(USING_ALTERA "Using Altera as Target" OFF) 
-
-set(ALTERA_LIBS_DIR "C:/altera/11.0sp1/quartus/eda/sim_lib")
-set(XILINX_LIBS_DIR "C:/Xilinx/13.4/ISE_DS/ISE/verilog/mti_se/6.5/nt")
+set(USING_XILINX 0)
+set(USING_ALTERA 1)
 
 set(TOP_MODULE_NAME buffer PARENT_SCOPE)
 
@@ -32,13 +29,44 @@ set(VHDL_SYN_SRC_FILES
     adder.vhd
 )
 
+set(XILINX_VERILOG_SYN_SRC_FILES )
+
+set(XILINX_VHDL_SYN_SRC_FILES 
+	xilinx/fifo.vhd
+)
+
+set(ALTERA_VERILOG_SYN_SRC_FILES 
+	altera/fifo.v
+)
+
+set(ALTERA_VHDL_SYN_SRC_FILES )
+
 if(USING_XILINX)
-	set(VHDL_SYN_SRC_FILES ${VHDL_SYN_SRC_FILES} 
-		xilinx/fifo.vhd)	
-elseif(USING_ALTERA)
-	set(VERILOG_SYN_SRC_FILES ${VERILOG_SYN_SRC_FILES} 
-		${ALTERA_LIBS_DIR}/altera_mf.v
-		altera/fifo.v)	
+
+	foreach (_src ${XILINX_VERILOG_SYN_SRC_FILES})
+		list(APPEND VERILOG_SYN_SRC_FILES ${_src})
+	endforeach (_src ${XILINX_VERILOG_SYN_SRC_FILES})
+		
+	foreach (_src ${XILINX_VHDL_SYN_SRC_FILES})
+		list(APPEND VHDL_SYN_SRC_FILES ${_src})
+	endforeach (_src $XILINX_VHDL_SYN_SRC_FILES})
+
+	message( STATUS "Using Xilinx Library" )
+
+else(USING_XILINX)
+	if(USING_ALTERA)
+
+		foreach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
+			list(APPEND VERILOG_SYN_SRC_FILES ${_src})
+		endforeach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
+		
+		foreach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
+			list(APPEND VHDL_SYN_SRC_FILES ${_src})
+		endforeach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
+
+		message( STATUS "Using Altera Library")
+
+	endif(USING_ALTERA)
 endif(USING_XILINX)
 
 set(VERILOG_SYN_SRC_FILES 	${VERILOG_SYN_SRC_FILES} 	PARENT_SCOPE)

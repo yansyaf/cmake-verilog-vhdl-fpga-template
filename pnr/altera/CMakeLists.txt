@@ -17,23 +17,30 @@
 
 set (SYN_SRC_FILE ${CMAKE_CURRENT_BINARY_DIR}/sources.tcl)
 
-file(WRITE ${SYN_SRC_FILE} "#Verilog Source Files for synthesis\n")
+file(WRITE ${SYN_SRC_FILE} "\n#Verilog Source Files for synthesis\n")
 
 foreach (_src ${VERILOG_SYN_SRC_FILES})
   file(APPEND ${SYN_SRC_FILE} "set_global_assignment -name VERILOG_FILE " ${VERILOG_SRC_DIR}/${_src}\n)
   list(APPEND SYN_SRC_ABS ${VERILOG_SRC_DIR}/${_src})
 endforeach (_src ${VERILOG_SYN_SRC_FILES})
 
-file(APPEND ${SYN_SRC_FILE} "#VHDL Source Files for synthesis\n")
+file(APPEND ${SYN_SRC_FILE} "\n#VHDL Source Files for synthesis\n")
 
 foreach (_src ${VHDL_SYN_SRC_FILES})
   file(APPEND ${SYN_SRC_FILE} "set_global_assignment -name VHDL_FILE " ${VHDL_SRC_DIR}/${_src}\n)
   list(APPEND SYN_SRC_ABS ${VHDL_SRC_DIR}/${_src})
 endforeach (_src ${VHDL_SYN_SRC_FILES})
 
+message (STATUS "TCL file has been written to: " ${CMAKE_CURRENT_BINARY_DIR}/source.tcl)
+
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/synscript.tcl.in"
+                "${CMAKE_CURRENT_BINARY_DIR}/synscript.tcl" )
+
+message (STATUS "TCL file has been written to: " ${CMAKE_CURRENT_BINARY_DIR}/synscript.tcl)
+
 add_custom_command(
   OUTPUT fmax.log
-  COMMAND quartus_sh -t ${CMAKE_CURRENT_SOURCE_DIR}/synscript.tcl
+  COMMAND quartus_sh -t ${CMAKE_CURRENT_BINARY_DIR}/synscript.tcl
   DEPENDS ${SYN_SRC_ABS}
 )
 

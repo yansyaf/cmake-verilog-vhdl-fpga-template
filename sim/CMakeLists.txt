@@ -29,7 +29,7 @@ elseif( ${TARGET} MATCHES "altera" )
   set(DEFINE_LIBRARY altera_mf_ver)
   set(DEFINE_TARGET "TARGET_ALTERA")
 else()
-  set(DEFINE_LIBRARY "altera_mf_ver")
+  set(DEFINE_LIBRARY "work")
   set(DEFINE_TARGET "TARGET_MODEL")
 endif()
 
@@ -51,7 +51,7 @@ endmacro(vhdl_src_collect)
 
 macro(add_compile_command)
   add_custom_command(
-    OUTPUT work/_vmake
+    OUTPUT work/_vlogmake
     COMMAND vlog ${VERILOG_SRC_ABS} +define+${DEFINE_TARGET}
     DEPENDS ${VERILOG_SRC_ABS} ${CMAKE_CURRENT_BINARY_DIR}/work
     COMMENT "Compiling Verilog files: ${VERILOG_SRC_ABS}"
@@ -76,15 +76,17 @@ macro(add_sim_command)
   # Run the simulation
   add_custom_command(
     OUTPUT transcript
+    COMMAND echo "vsim -c -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}"
     COMMAND vsim -c -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vlogmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
     COMMENT "Run Simulation"
   )
 
   add_custom_command(
     OUTPUT transcript_gui
+    COMMAND echo "vsim -novopt -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}"
     COMMAND vsim -novopt -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vlogmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
     COMMENT "Run Simulation"
   )  
 endmacro(add_sim_command)
@@ -97,7 +99,7 @@ vhdl_src_collect()
 add_compile_command()
 add_sim_command()
 
-add_custom_target(compile DEPENDS work/_vmake)
+add_custom_target(compile DEPENDS work/_vlogmake work/_vhdmake)
 
 add_custom_target(sim DEPENDS transcript)
 add_custom_target(sim_gui DEPENDS transcript_gui)

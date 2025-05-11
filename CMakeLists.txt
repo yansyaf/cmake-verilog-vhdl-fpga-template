@@ -20,8 +20,20 @@ cmake_minimum_required(VERSION 3.1)
 # Option available:
 # - xilinx
 # - altera
-# - model: no syn available for this target
-set(TARGET "xilinx")
+# - model
+#set(TARGET "model")
+set(TARGET "model" CACHE STRING
+  "Select the HDL model. Supported values are: xilinx;altera;model")
+set(target_values "xilinx;altera;model" CACHE STRING
+  "List of possible HDL models")
+set_property(CACHE TARGET PROPERTY STRINGS ${target_values})
+message(STATUS "TARGET='${TARGET}'")
+
+if(NOT ((${TARGET} STREQUAL "xilinx") OR (${TARGET} STREQUAL "altera") OR (${TARGET} STREQUAL "model")))
+   message(FATAL_ERROR "Unsupported HDL model: ${TARGET}")
+endif()
+
+
 
 add_subdirectory(src)
 add_subdirectory(sim)

@@ -15,26 +15,37 @@
 
 #############################################################################
 
-set (DEVICE_FAMILY 			xc4vlx15)
+set (DEVICE_FAMILY 			XC7A100T)
 
 set (SYN_SRC_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TOP_MODULE_NAME}.prj)
 
 file(WRITE ${SYN_SRC_FILE} "\n")
 
 foreach (_src ${VHDL_SYN_SRC_FILES})
-  file(APPEND ${SYN_SRC_FILE} "vhdl work \"${VHDL_SRC_DIR}/${_src}\"\n")
-  list(APPEND SYN_SRC_ABS ${VHDL_SRC_DIR}/${_src})
+  string(APPEND VHDL_SYN_SRC_ABS "${VHDL_SRC_DIR}/${_src} ")
 endforeach (_src ${VHDL_SYN_SRC_FILES})
 
 foreach (_src ${VERILOG_SYN_SRC_FILES})
-  file(APPEND ${SYN_SRC_FILE} "verilog work \"${VERILOG_SRC_DIR}/${_src}\"\n")
-  list(APPEND SYN_SRC_ABS ${VERILOG_SRC_DIR}/${_src})
+  string(APPEND VERILOG_SYN_SRC_ABS "${VERILOG_SRC_DIR}/${_src} ")
 endforeach (_src ${VERILOG_SYN_SRC_FILES})
 
-add_custom_command(
-  OUTPUT xflow.log
-  COMMAND xflow -p ${DEVICE_FAMILY} -synth xst_mixed.opt -implement high_effort.opt -config bitgen.opt ${TOP_MODULE_NAME}.prj
+# write vivado tcl script
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "
+  read_vhdl \{${VHDL_SYN_SRC_ABS}\}
+  read_verilog \{${VERILOG_SYN_SRC_ABS}\}
+  read_xdc ${CMAKE_CURRENT_SOURCE_DIR}/constraints.xdc
+  synth_design -top ${TOP_MODULE_NAME} -part ${DEVICE_FAMILY}
+  write_checkpoint -force post_synth.dcp
+  report_utilization -file utilization.rpt
+  report_timing -file timing.rpt
+  exit")
+
+# add custom target to run vivado
+add_custom_target(vivado
+  COMMAND vivado -nojournal -nolog -mode batch -source ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl
   DEPENDS ${SYN_SRC_FILE}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Running Vivado synthesis"
 )
 
-add_custom_target(syn DEPENDS xflow.log)
+add_custom_target(syn DEPENDS vivado)

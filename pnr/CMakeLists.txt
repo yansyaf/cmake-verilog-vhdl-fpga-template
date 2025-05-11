@@ -20,3 +20,4 @@ if( ${TARGET} MATCHES "xilinx" )
 elseif( ${TARGET} MATCHES "altera" )
 	add_subdirectory(altera)
 endif()
+

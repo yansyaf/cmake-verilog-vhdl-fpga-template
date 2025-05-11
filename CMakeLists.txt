@@ -16,16 +16,12 @@
 project ("My Project")
 cmake_minimum_required(VERSION 3.1)
 
-# Select one of option bellow to be ON/OFF
-set(USING_XILINX 1 CACHE STRING "Xilinx Option")
-set(USING_ALTERA 0 CACHE STRING "Altera Option")
-
 #############################################################################
 # Option available:
 # - xilinx
 # - altera
-# - model
-set(TARGET "model")
+# - model: no syn available for this target
+set(TARGET "xilinx")
 
 add_subdirectory(src)
 add_subdirectory(sim)

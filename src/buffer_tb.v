@@ -16,7 +16,7 @@ always #1 clk = ~clk;
 
 initial begin
   $dumpfile ("buffer.vcd");
-  $dumpvars();
+  //$dumpvars();
   clk = 0;
   rst = 1;
   in0 = 0;

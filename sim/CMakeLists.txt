@@ -29,7 +29,7 @@ elseif( ${TARGET} MATCHES "altera" )
   set(DEFINE_LIBRARY altera_mf_ver)
   set(DEFINE_TARGET "TARGET_ALTERA")
 else()
-  set(DEFINE_LIBRARY "altera_mf_ver")
+  set(DEFINE_LIBRARY "work")
   set(DEFINE_TARGET "TARGET_MODEL")
 endif()
 
@@ -38,6 +38,7 @@ macro(verilog_src_collect)
   foreach (_src ${VERILOG_SRC_FILES})
       list( APPEND VERILOG_SRC_ABS ${VERILOG_SRC_DIR}/${_src})
   endforeach (_src ${VERILOG_SRC_FILES})
+  message(STATUS "VERILOG_SRC_ABS: " ${VERILOG_SRC_ABS})
 endmacro(verilog_src_collect)
 
 macro(vhdl_src_collect)
@@ -45,6 +46,7 @@ macro(vhdl_src_collect)
   foreach (_src ${VHDL_SRC_FILES})
       list( APPEND VHDL_SRC_ABS ${VHDL_SRC_DIR}/${_src})
   endforeach (_src ${VHDL_SRC_FILES})
+  message(STATUS "VHDL_SRC_ABS: " ${VHDL_SRC_ABS})
 endmacro(vhdl_src_collect)
 
 #### Custom commands
@@ -77,14 +79,14 @@ macro(add_sim_command)
   add_custom_command(
     OUTPUT transcript
     COMMAND vsim -c -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake 
     COMMENT "Run Simulation"
   )
 
   add_custom_command(
     OUTPUT transcript_gui
-    COMMAND vsim -novopt -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
+    COMMAND vsim -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake 
     COMMENT "Run Simulation"
   )  
 endmacro(add_sim_command)
@@ -97,7 +99,7 @@ vhdl_src_collect()
 add_compile_command()
 add_sim_command()
 
-add_custom_target(compile DEPENDS work/_vmake)
+add_custom_target(compile DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vmake )
 
 add_custom_target(sim DEPENDS transcript)
 add_custom_target(sim_gui DEPENDS transcript_gui)

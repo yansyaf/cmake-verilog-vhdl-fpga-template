@@ -33,7 +33,7 @@ if(NOT ((${TARGET} STREQUAL "xilinx") OR (${TARGET} STREQUAL "altera") OR (${TAR
    message(FATAL_ERROR "Unsupported HDL model: ${TARGET}")
 endif()
 
-
+set (DEVICE_FAMILY 	"xc7a100tfgg676-1" CACHE STRING "FPGA device family")
 
 add_subdirectory(src)
 add_subdirectory(sim)

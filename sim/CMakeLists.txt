@@ -52,19 +52,33 @@ endmacro(vhdl_src_collect)
 #### Custom commands
 
 macro(add_compile_command)
-  add_custom_command(
-    OUTPUT work/_vlogmake
-    COMMAND vlog ${VERILOG_SRC_ABS} +define+${DEFINE_TARGET}
-    DEPENDS ${VERILOG_SRC_ABS} ${CMAKE_CURRENT_BINARY_DIR}/work
-    COMMENT "Compiling Verilog files: ${VERILOG_SRC_ABS}"
-  )
+  if(DEFINED VERILOG_SRC_ABS)
+    add_custom_command(
+      OUTPUT work/_vlogmake
+      COMMAND vlog ${VERILOG_SRC_ABS} +define+${DEFINE_TARGET}
+      DEPENDS ${VERILOG_SRC_ABS} ${CMAKE_CURRENT_BINARY_DIR}/work
+      COMMENT "Compiling Verilog files: ${VERILOG_SRC_ABS}"
+    )
+  else()
+    add_custom_command(
+      OUTPUT work/_vlogmake
+      COMMENT "Compiling Verilog files: ${VERILOG_SRC_ABS}"
+    )  
+  endif()
 
-  add_custom_command(
-    OUTPUT work/_vhdmake
-    COMMAND vcom ${VHDL_SRC_ABS} 
-    DEPENDS ${VHDL_SRC_ABS} ${CMAKE_CURRENT_BINARY_DIR}/work
-    COMMENT "Compiling VHDL files: ${VHDL_SRC_ABS}"
-  )
+  if(DEFINED VHDL_SRC_ABS)
+    add_custom_command(
+      OUTPUT work/_vhdmake
+      COMMAND vcom ${VHDL_SRC_ABS} +define+${DEFINE_TARGET}
+      DEPENDS ${VHDL_SRC_ABS} ${CMAKE_CURRENT_BINARY_DIR}/work
+      COMMENT "Compiling VHDL files: ${VHDL_SRC_ABS}"
+    )
+  else()
+    add_custom_command(
+      OUTPUT work/_vhdmake
+      COMMENT "Compiling VHDL files: ${VHDL_SRC_ABS}"
+    )  
+  endif()
 
   # Generate the work library
   add_custom_command(
@@ -80,7 +94,6 @@ macro(add_sim_command)
     OUTPUT transcript
     COMMAND echo "vsim -c -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}"
     COMMAND vsim -c -do \"run -all\;quit\" -L ${DEFINE_LIBRARY} ${TESTBENCH_MODULE_NAME}
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/work/_vlogmake ${CMAKE_CURRENT_BINARY_DIR}/work/_vhdmake
     COMMENT "Run Simulation"
   )
 
@@ -103,5 +116,5 @@ add_sim_command()
 
 add_custom_target(compile DEPENDS work/_vlogmake work/_vhdmake)
 
-add_custom_target(sim DEPENDS transcript)
-add_custom_target(sim_gui DEPENDS transcript_gui)
+add_custom_target(sim DEPENDS transcript compile)
+add_custom_target(sim_gui DEPENDS transcript_gui compile)

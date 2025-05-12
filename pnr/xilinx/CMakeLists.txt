@@ -15,11 +15,7 @@
 
 #############################################################################
 
-set (DEVICE_FAMILY 			XC7A100T)
-
 set (SYN_SRC_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TOP_MODULE_NAME}.prj)
-
-file(WRITE ${SYN_SRC_FILE} "\n")
 
 foreach (_src ${VHDL_SYN_SRC_FILES})
   string(APPEND VHDL_SYN_SRC_ABS "${VHDL_SRC_DIR}/${_src} ")
@@ -29,16 +25,32 @@ foreach (_src ${VERILOG_SYN_SRC_FILES})
   string(APPEND VERILOG_SYN_SRC_ABS "${VERILOG_SRC_DIR}/${_src} ")
 endforeach (_src ${VERILOG_SYN_SRC_FILES})
 
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "create_project \"${CMAKE_PROJECT_NAME}\" -part ${DEVICE_FAMILY} -force\n")
+# file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "set_property top ${TOP_MODULE_NAME} [current_fileset]\n")
+
+if(DEFINED VHDL_SYN_SRC_ABS)
+  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "read_vhdl \{${VHDL_SYN_SRC_ABS}\}")
+endif()
+
+if(DEFINED VERILOG_SYN_SRC_FILES)
+  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "read_verilog \{${VERILOG_SYN_SRC_ABS}\}")
+endif()
+
 # write vivado tcl script
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "
-  read_vhdl \{${VHDL_SYN_SRC_ABS}\}
-  read_verilog \{${VERILOG_SYN_SRC_ABS}\}
-  read_xdc ${CMAKE_CURRENT_SOURCE_DIR}/constraints.xdc
-  synth_design -top ${TOP_MODULE_NAME} -part ${DEVICE_FAMILY}
-  write_checkpoint -force post_synth.dcp
-  report_utilization -file utilization.rpt
-  report_timing -file timing.rpt
-  exit")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "
+read_xdc ${CMAKE_CURRENT_SOURCE_DIR}/constraints.xdc
+synth_design -top ${TOP_MODULE_NAME} -part ${DEVICE_FAMILY}
+write_checkpoint -force post_synth.dcp
+report_utilization -file utilization.rpt
+report_timing -file timing.rpt
+opt_design
+power_opt_design
+place_design
+phys_opt_design
+route_design
+write_checkpoint -force post_synth.dcp
+write_bitstream -force ${TOP_MODULE_NAME}.bit
+exit")
 
 # add custom target to run vivado
 add_custom_target(syn 

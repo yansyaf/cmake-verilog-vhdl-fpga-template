@@ -14,9 +14,9 @@
 
 #############################################################################
 
-add_subdirectory(altera)
-add_subdirectory(xilinx)
-add_subdirectory(model)
+# add_subdirectory(altera)
+# add_subdirectory(xilinx)
+# add_subdirectory(model)
 
 set(TOP_MODULE_NAME 		buffer 		PARENT_SCOPE)
 set(TESTBENCH_MODULE_NAME 	buffer_tb 	PARENT_SCOPE)
@@ -39,37 +39,37 @@ set(VHDL_TB_SRC_FILE
 
 if( ${TARGET} MATCHES "xilinx" )
 
-	foreach (_src ${XILINX_VERILOG_SYN_SRC_FILES})
-		list(APPEND VERILOG_SYN_SRC_FILES xilinx/${_src})
-	endforeach (_src ${XILINX_VERILOG_SYN_SRC_FILES})
+	foreach (_src ${XILINX_VERILOG_SYN_SRC_FILES_ABS})
+		list(APPEND VERILOG_SYN_SRC_FILES ${_src})
+	endforeach (_src ${XILINX_VERILOG_SYN_SRC_FILES_ABS})
 		
-	foreach (_src ${XILINX_VHDL_SYN_SRC_FILES})
-		list(APPEND VHDL_SYN_SRC_FILES xilinx/${_src})
-	endforeach (_src $XILINX_VHDL_SYN_SRC_FILES})
+	foreach (_src ${XILINX_VHDL_SYN_SRC_FILES_ABS})
+		list(APPEND VHDL_SYN_SRC_FILES ${_src})
+	endforeach (_src ${XILINX_VHDL_SYN_SRC_FILES_ABS})
 
 	message( STATUS "Using Xilinx Library" )
 
 elseif(${TARGET} MATCHES "altera")
 
-	foreach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
-		list(APPEND VERILOG_SYN_SRC_FILES altera/${_src})
-	endforeach (_src ${ALTERA_VERILOG_SYN_SRC_FILES})
+	foreach (_src ${ALTERA_VERILOG_SYN_SRC_FILES_ABS})
+		list(APPEND VERILOG_SYN_SRC_FILES ${_src})
+	endforeach (_src ${ALTERA_VERILOG_SYN_SRC_FILES_ABS})
 	
-	foreach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
-		list(APPEND VHDL_SYN_SRC_FILES altera/${_src})
-	endforeach (_src ${ALTERA_VHDL_SYN_SRC_FILES})
+	foreach (_src ${ALTERA_VHDL_SYN_SRC_FILES_ABS})
+		list(APPEND VHDL_SYN_SRC_FILES ${_src})
+	endforeach (_src ${ALTERA_VHDL_SYN_SRC_FILES_ABS})
 
 	message( STATUS "Using Altera Library")
 
 else()
 
-	foreach (_src ${MODEL_VERILOG_SYN_SRC_FILES})
-		list(APPEND VERILOG_SYN_SRC_FILES model/${_src})
-	endforeach (_src ${MODEL_VERILOG_SYN_SRC_FILES})
+	foreach (_src ${MODEL_VERILOG_SYN_SRC_FILES_ABS})
+		list(APPEND VERILOG_SYN_SRC_FILES ${_src})
+	endforeach (_src ${MODEL_VERILOG_SYN_SRC_FILES_ABS})
 	
-	foreach (_src ${MODEL_VHDL_SYN_SRC_FILES})
-		list(APPEND VHDL_SYN_SRC_FILES model/${_src})
-	endforeach (_src ${MODEL_VHDL_SYN_SRC_FILES})
+	foreach (_src ${MODEL_VHDL_SYN_SRC_FILES_ABS})
+		list(APPEND VHDL_SYN_SRC_FILES ${_src})
+	endforeach (_src ${MODEL_VHDL_SYN_SRC_FILES_ABS})
 
 	message( STATUS "Using Behavioral Model Library")
 

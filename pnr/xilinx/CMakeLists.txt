@@ -59,3 +59,25 @@ add_custom_target(syn
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Running Vivado synthesis"
 )
+
+# Add custom target to program the FPGA
+add_custom_target(program
+  COMMAND vivado -nojournal -nolog -mode tcl -source ${CMAKE_CURRENT_BINARY_DIR}/program_device.tcl
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TOP_MODULE_NAME}.bit
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Programming the FPGA with the bitstream"
+)
+
+# Generate the TCL script for programming the FPGA
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/program_device.tcl "
+open_hw_manager
+connect_hw_server
+open_hw_target
+current_hw_device [lindex [get_hw_devices] 0]
+refresh_hw_device [current_hw_device]
+set_property PROGRAM.FILE {${CMAKE_CURRENT_BINARY_DIR}/${TOP_MODULE_NAME}.bit} [current_hw_device]
+program_hw_devices [current_hw_device]
+close_hw_target
+disconnect_hw_server
+exit
+")

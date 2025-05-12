@@ -39,7 +39,7 @@ ADDER iadder (
 `ifdef TARGET_XILINX
   fifo I_FIFO (
       .clk    (clk),
-      .rst    (rst),
+      .srst   (rst),
       .din    (sum),
       .wr_en  (in_en),
       .rd_en  (out_en),

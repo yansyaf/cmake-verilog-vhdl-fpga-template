@@ -13,6 +13,14 @@ A CMake template for Verilog and VHDL projects targeting Altera and Xilinx FPGAs
 2. **Xilinx**
 3. **Altera**
 
+## Quick Start
+
+To quickly start developing your FPGA code, clone this repository
+
+```bash
+git clone https://github.com/yansyaf/cmake-verilog-vhdl-fpga-template.git
+```
+
 ## Build Instructions
 
 To configure the project for a specific target, use the following command:
@@ -36,6 +44,8 @@ or for GUI simulation, use the following command:
 ```bash
 make sim_gui
 ```
+
+NOTE: to run simulation in xilinx/altera target, make sure you have compile your FPGA IP Core first.
 
 ## Running Synthesis
 

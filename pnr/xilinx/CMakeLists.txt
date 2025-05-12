@@ -29,11 +29,11 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "create_project \"${CMAKE_PROJ
 # file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "set_property top ${TOP_MODULE_NAME} [current_fileset]\n")
 
 if(DEFINED VHDL_SYN_SRC_ABS)
-  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "read_vhdl \{${VHDL_SYN_SRC_ABS}\}")
+  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "read_vhdl \{${VHDL_SYN_SRC_ABS}\}\n")
 endif()
 
 if(DEFINED VERILOG_SYN_SRC_FILES)
-  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "read_verilog \{${VERILOG_SYN_SRC_ABS}\}")
+  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl "read_verilog \{${VERILOG_SYN_SRC_ABS}\}\n")
 endif()
 
 # write vivado tcl script

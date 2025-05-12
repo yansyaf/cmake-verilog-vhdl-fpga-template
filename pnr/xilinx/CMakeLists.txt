@@ -15,8 +15,6 @@
 
 #############################################################################
 
-set (SYN_SRC_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TOP_MODULE_NAME}.prj)
-
 foreach (_src ${VHDL_SYN_SRC_FILES})
   string(APPEND VHDL_SYN_SRC_ABS "${VHDL_SRC_DIR}/${_src} ")
 endforeach (_src ${VHDL_SYN_SRC_FILES})
@@ -55,7 +53,6 @@ exit")
 # add custom target to run vivado
 add_custom_target(syn 
   COMMAND vivado -nojournal -nolog -mode batch -source ${CMAKE_CURRENT_BINARY_DIR}/vivado.tcl
-  DEPENDS ${SYN_SRC_FILE}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Running Vivado synthesis"
 )
